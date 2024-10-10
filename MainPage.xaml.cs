@@ -1,24 +1,23 @@
-﻿namespace CameraViewExternalCameras
+﻿using CommunityToolkit.Maui.Core;
+namespace CameraViewExternalCameras
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
-        public MainPage()
+        private readonly ICameraProvider _cameraProvider;
+        public MainPage(ICameraProvider cameraProvider)
         {
             InitializeComponent();
+            _cameraProvider = cameraProvider;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
-            count++;
+            base.OnNavigatedTo(args);
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+            _cameraProvider.RefreshAvailableCameras(new CancellationToken());
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            // should include external cameras plugged in to Android device, but doesn't
+            var availableCameras = _cameraProvider.AvailableCameras;
         }
     }
 
